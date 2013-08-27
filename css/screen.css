@@ -1,0 +1,9 @@
+body {
+    padding-top: 70px;
+    padding-bottom: 70px;
+}
+
+.list-group-item .pull-left img {
+    width: 50px;
+    padding-right: 10px;
+}

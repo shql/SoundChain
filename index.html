@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>SoundChain - A SoundCloud Queue</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="css/screen.css" rel="stylesheet" media="screen">
+  </head>
+  <body>
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    	<div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#"><span class="glyphicon glyphicon-cloud"></span> SoundChain</a>
+    	</div>
+
+        <!-- The following block will be collapsed if needed -->
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="#"><span class="glyphicon glyphicon-home"></span> Queue</a></li>
+                <li><a href="#history"><span class="glyphicon glyphicon-list-alt"></span> History</a></li>
+                <li><a href="#search"><span class="glyphicon glyphicon-search"></span> Search</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-cog"></span> <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Clear Queue</a></li>
+                        <li><a href="#">Clear History</a></li>
+                        <li><a href="#" id="sign-in-button">Sign in</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <div class="navbar-right" id="play-controls">
+                <ul class="nav navbar-nav">
+                    <li><a href="#" class="audio-last"><span class="glyphicon glyphicon-fast-backward"></span></a></li>
+                    <li><a href="#" class="audio-toggle"><span class="glyphicon glyphicon-play"></span></a></li>
+                    <li><a href="#" class="audio-next"><span class="glyphicon glyphicon-fast-forward"></span></a></li>
+                    <li><a href="#" class="audio-shuffle"><span class="glyphicon glyphicon-random"></span></a></li>
+                    <li><a href="#" class="audio-repeat"><span class="glyphicon glyphicon-repeat"></span></a></li>
+                </ul>
+            </div>
+        </div><!-- /.navbar-collapse -->
+    </nav>
+
+    <!-- Sections for routes -->
+    <div id="queue-list" class="section" style="display: none;">
+        <div class="list-group">
+        </div>
+    </div>
+
+    <div id="history-list" class="section" style="display: none;">
+
+    </div>
+
+    <div id="search-list" class="section" style="display: none;">
+        <nav class="navbar navbar-default" role="navigation">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">Search</a>
+            </div>
+            <form class="navbar-form navbar-left" role="search">
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Search SoundCloud">
+                </div>
+                <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button>
+            </form>
+        </nav>
+        <ul class="list-group search-results" id="search-results">
+            <li class="list-group-item">
+                <h4 class="list-group-item-heading">Empty</h4>
+                <p class="list-group-item-text">
+                    Search for sounds on SoundCloud
+                </p>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Bottom sticky toolbar -->
+    <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
+        <p class="navbar-text navbar-right">
+            <a href="http://soundcloud.com/" target="_blank">
+                <img src="http://developers.soundcloud.com/assets/powered_by_black-ee7e351d64511ecea75c6c17ca30064f.png" alt="Powered by SoundCloud">
+            </a>
+        </p>
+    </nav>
+
+    <!-- Templates -->
+    <script type="text/template" class="template" id="playlist-item">
+        <a href="#" class="list-group-item track-id-<%- track.get('id') %>" data-track-id="<%- track.get('id') %>">
+            <div class="pull-left">
+                <img src="<%= track.get('user').avatar_url %>" alt="">
+            </div>
+            <div class="pull-right">
+                <button type="button" class="btn btn-info btn-sm track-play">
+                    <span class="glyphicon glyphicon-play"></span>
+                </button>
+                <button type="button" class="btn btn-danger btn-sm track-remove-from-playlist">
+                    <span class="glyphicon glyphicon-minus"></span>
+                </button>
+                <button type="button" class="btn btn-default btn-sm track-view-on-sc">
+                    <span class="glyphicon glyphicon-cloud"></span>
+                </button>
+                <button type="button" class="btn btn-default btn-sm handle">
+                    <span class="glyphicon glyphicon-sort"></span>
+                </button>
+            </div>
+            <h4 class="list-group-item-heading">
+                <%= track.get('title') %>
+                <span class="badge"><%= track.get('duration_h') %> min</span>
+            </h4>
+            <p class="list-group-item-text">
+                <%= track.get('username') %>
+            </p>
+        </a>
+    </script>
+
+    <script type="text/template" class="template" id="search-results-item">
+        <li class="list-group-item">
+            <div class="pull-left">
+                <img src="<%= track.get('avatar_url') %>" alt="">
+            </div>
+            <div class="pull-right">
+                <button type="button" class="btn btn-default btn-sm track-add-to-playlist">
+                    <span class="glyphicon glyphicon-plus"></span> Add
+                </button>
+                <button type="button" class="btn btn-default btn-sm track-play">
+                    <span class="glyphicon glyphicon-play"></span> Play
+                </button>
+            </div>
+            <h4 class="list-group-item-heading"><%= track.get('title') %></h4>
+            <p class="list-group-item-text">
+                <%= track.get('username') %>
+            </p>
+        </li>
+    </script>
+
+    <div id="empty-playlist" style="display: none;">
+        <a href="#search" class="list-group-item">
+            <h4 class="list-group-item-heading">Empty queue</h4>
+            <p class="list-group-item-text">
+                Click here to search for tracks
+            </p>
+        </a>
+    </div>
+
+    <!-- jQuery & plugins -->
+    <script src="//code.jquery.com/jquery.js"></script>
+    <script src="//code.jquery.com/ui/1.10.3/jquery-ui.min.js"></script>
+    <script src="js/jquery.ui.touch-punch.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="js/bootstrap.min.js"></script>
+
+    <!-- SoundChain JS & dependencies -->
+    <script src="js/underscore.js"></script>
+    <script src="js/backbone.js"></script>
+    <script src="js/backbone.localStorage-min.js"></script>
+    <script data-main="js/soundchain/main" src="js/require.min.js"></script>
+
+  </body>
+</html>
