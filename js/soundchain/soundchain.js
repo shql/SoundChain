@@ -1,7 +1,8 @@
 var soundCloudApiUrl = 'http://connect.soundcloud.com/sdk.js';
 define([
-    soundCloudApiUrl
-], function(SoundCloud) {
+    soundCloudApiUrl,
+    'player', 'search', 'ui'
+], function(SoundCloud, Player, Search, UI) {
 
     var initialize = function() {
 
@@ -12,19 +13,18 @@ define([
         });
 
         // Init base modules / components
-        require(['player', 'search', 'ui'], function(Player, Search, UI) {
-            Player.initialize();
-            Search.initialize();
-            UI.initialize();
-        });
+        Player.initialize();
+        Search.initialize();
+        UI.initialize();
 
-        // A few routes (without module because very simple)
+        // A few routes (without router module because very simple)
         var Router = Backbone.Router.extend({
 
             routes: {
                 '' : 'queue',
-                'history' : 'history',
-                'search' : 'search'
+                'search' : 'search',
+                'queue/clear' : 'clearQueue',
+                'bookmarklet/:scURL' : 'bookmarklet'
             },
 
             queue : function() {
@@ -34,18 +34,36 @@ define([
                 $('#queue-list').show();
             },
 
-            history : function() {
-                $('ul.nav.navbar-nav > li').removeClass('active');
-                $($('ul.nav.navbar-nav > li').get(1)).addClass('active');
-                $('div.section').hide();
-                $('#history-list').show();
-            },
-
             search : function() {
                 $('ul.nav.navbar-nav > li').removeClass('active');
                 $($('ul.nav.navbar-nav > li').get(2)).addClass('active');
                 $('div.section').hide();
                 $('#search-list').show();
+            },
+
+            clearQueue : function() {
+                Player.getPlaylist().each(function(track) {
+                    Player.getPlaylist().remove(track);
+                });
+                window.location.href = "#";
+            },
+
+            bookmarklet : function(scURL) {
+                var scURL = decodeURIComponent(scURL);
+
+                SC.get('/resolve', { url: scURL }, function(track) {
+                    var scTrack = track;
+                    if(typeof scTrack.errors == 'undefined') {
+                        require(['models/track'], function(TrackModel) {
+                            var track = new TrackModel(scTrack);
+                            Player.getPlaylist().add(track);
+                            window.location.href = "#";
+                        });
+                    } else {
+                        alert('An error occured');
+                        window.location.href = "#";
+                    }
+                });
             }
 
         });
