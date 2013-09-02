@@ -158,14 +158,16 @@ define([
          */
         playLast : function()
         {
-            if(this.getShuffle()) {
-                var random = this.getPlaylist().indexOf(this.getPlaylist().getElement());
-                while(this.getPlaylist().at(random).get('id') == this.currentTrackId) {
-                    random = _.random(0, this.getPlaylist().length - 1);
+            if(this.getPlaylist().length > 1) {
+                if(this.getShuffle()) {
+                    var random = this.getPlaylist().indexOf(this.getPlaylist().getElement());
+                    while(this.getPlaylist().at(random).get('id') == this.currentTrackId) {
+                        random = _.random(0, this.getPlaylist().length - 1);
+                    }
+                    this.play(this.getPlaylist().setElement(this.getPlaylist().at(random)));
+                } else {
+                    this.play(this.getPlaylist().prev(this.getRepeat()).getElement().get('id'));
                 }
-                this.play(this.getPlaylist().setElement(this.getPlaylist().at(random)));
-            } else {
-                this.play(this.getPlaylist().prev(this.getRepeat()).getElement().get('id'));
             }
         },
 
@@ -175,14 +177,16 @@ define([
          */
         playNext : function()
         {
-            if(this.getShuffle()) {
-                var random = this.getPlaylist().indexOf(this.getPlaylist().getElement());
-                while(this.getPlaylist().at(random).get('id') == this.currentTrackId) {
-                    random = _.random(0, this.getPlaylist().length - 1);
+            if(this.getPlaylist().length > 1) {
+                if(this.getShuffle()) {
+                    var random = this.getPlaylist().indexOf(this.getPlaylist().getElement());
+                    while(this.getPlaylist().at(random).get('id') == this.currentTrackId) {
+                        random = _.random(0, this.getPlaylist().length - 1);
+                    }
+                    this.play(this.getPlaylist().setElement(this.getPlaylist().at(random)));
+                } else {
+                    this.play(this.getPlaylist().next(this.getRepeat()).getElement().get('id'));
                 }
-                this.play(this.getPlaylist().setElement(this.getPlaylist().at(random)));
-            } else {
-                this.play(this.getPlaylist().next(this.getRepeat()).getElement().get('id'));
             }
         },
 

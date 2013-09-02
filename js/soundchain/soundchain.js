@@ -36,7 +36,7 @@ define([
 
             search : function() {
                 $('ul.nav.navbar-nav > li').removeClass('active');
-                $($('ul.nav.navbar-nav > li').get(2)).addClass('active');
+                $($('ul.nav.navbar-nav > li').get(1)).addClass('active');
                 $('div.section').hide();
                 $('#search-list').show();
             },
